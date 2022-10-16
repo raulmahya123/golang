@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"golang/helper"
 	"golang/user"
 	"net/http"
 
@@ -16,18 +17,17 @@ func NewUserHandler(userService user.Service) *userHandler {
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
-
 	var input user.RegisterUserInput
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 	}
-
 	user, err := h.userService.RegisterUser(input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 	}
+	response := helper.APIResponse("avcooun berhasil", http.StatusOK, "sukses", user)
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, response)
 }
