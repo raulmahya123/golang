@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"golang/auth"
 	"golang/handler"
 	"golang/user"
@@ -23,7 +24,21 @@ func main() {
 	userService := user.NewService(userRepository)
 
 	authService := auth.NewService()
-
+	token, err := authService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxOH0.uNNfGEck8YnrfTdtOyDTZahulWio4kI7Md8Qe_NdttA")
+	if err != nil {
+		fmt.Println("error")
+		fmt.Println("error")
+		fmt.Println("error")
+	}
+	if token.Valid {
+		fmt.Println("VALID")
+		fmt.Println("VALID")
+		fmt.Println("VALID")
+	} else {
+		fmt.Println("INVALID")
+		fmt.Println("INVALID")
+		fmt.Println("INVALID")
+	}
 	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
