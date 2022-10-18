@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"golang/helper"
 	"golang/user"
 	"net/http"
@@ -92,5 +93,32 @@ func (h *userHandler) ChekEmailAvailability(c *gin.Context) {
 	}
 
 	response := helper.APIResponse(metaMessage, http.StatusOK, "sukses", data)
+	c.JSON(http.StatusOK, response)
+}
+func (h *userHandler) UploadAvatar(c *gin.Context) {
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		data := gin.H{"is_upload": false}
+		response := helper.APIResponse("failed ti upload avatar imagae", http.StatusBadRequest, "error", data)
+		c.JSON(http.StatusBadRequest, response)
+	}
+	userID := 1
+	// path := "images/" + file.Filename
+	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		data := gin.H{"is_upload": false}
+		response := helper.APIResponse("failed ti upload avatar imagae", http.StatusBadRequest, "error", data)
+		c.JSON(http.StatusBadRequest, response)
+	}
+
+	_, err = h.userService.SaveAvatar(userID, path)
+	if err != nil {
+		data := gin.H{"is_upload": false}
+		response := helper.APIResponse("failed ti upload avatar imagae", http.StatusBadRequest, "error", data)
+		c.JSON(http.StatusBadRequest, response)
+	}
+	data := gin.H{"is_upload": true}
+	response := helper.APIResponse("Avatar succes", http.StatusOK, "sukses", data)
 	c.JSON(http.StatusOK, response)
 }
