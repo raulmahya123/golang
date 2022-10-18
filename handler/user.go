@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"golang/auth"
 	"golang/helper"
 	"golang/user"
 	"net/http"
@@ -11,10 +12,11 @@ import (
 
 type userHandler struct {
 	userService user.Service
+	authService auth.Service
 }
 
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
@@ -34,7 +36,15 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	formatter := user.FormatUser(newUser, "tokennn berhasil")
+
+	token, err := h.authService.GenerateToken(newUser.UpdatedAt.Day())
+	if err != nil {
+		response := helper.APIResponse("avcooun gagal", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := user.FormatUser(newUser, token)
 	response := helper.APIResponse("avcooun berhasil", http.StatusOK, "sukses", formatter)
 
 	c.JSON(http.StatusOK, response)
@@ -51,6 +61,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
+
 	loggedinUser, err := h.userService.Login(input)
 
 	if err != nil {
@@ -59,8 +70,15 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
-	formatter := user.FormatUser(loggedinUser, "tokennn berhasil")
-	response := helper.APIResponse("Succesfuly Login", http.StatusOK, "error", formatter)
+	token, err := h.authService.GenerateToken(loggedinUser.UpdatedAt.Day())
+	if err != nil {
+		response := helper.APIResponse("login  gagal", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := user.FormatUser(loggedinUser, token)
+	response := helper.APIResponse("Succesfuly Login", http.StatusOK, "berhasil", formatter)
 	c.JSON(http.StatusOK, response)
 
 }

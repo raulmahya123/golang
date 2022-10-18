@@ -3,7 +3,7 @@ package user
 type UserFormatter struct {
 	Name       string `json:"name"`
 	Occupation string `json:"occupation"`
-	Email      string `json:"email`
+	Email      string `json:"email"`
 	Token      string `json:"token"`
 }
 

@@ -62,7 +62,7 @@ func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if user.ID == 0 {
+	if user.UpdatedAt.Day() == 0 {
 		return true, nil
 	}
 	return false, nil
