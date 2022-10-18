@@ -13,3 +13,6 @@ type User struct {
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
+type Userr struct {
+	ID int
+}
